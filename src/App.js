@@ -3,65 +3,51 @@ import './App.css';
 import Searchbar from './components/Searchbar/Searchbar';
 import ImageGallery from './components/ImageGallery/ImageGallery';
 import Button from './components/Button/Button';
+import Spinner from './components/Loader/Spinner';
 import pixabayApi from './components/Api/pixabayApi';
 
 export default class App extends Component {
   state = {
-    query: '',
     images: [],
+    query: '',
     page: 1,
     status: 'idle',
-    error: null,
     loadMore: false,
   };
 
   componentDidUpdate(prevProps, prevState) {
-    const { query, page, images, isLoadMore } = this.state;
-    if (prevState.query !== query) {
+    const { query, page, images } = this.state;
+    if (prevState.query !== query || prevState.page !== page) {
       this.setState({
         status: 'pending',
       });
 
-      pixabayApi(query)
+      pixabayApi(query, page)
         .then(results => {
           const resultsLength = results.hits.length;
+          const loadMore = this.checkImageLength(resultsLength);
+
           this.setState({
-            images: [...results.hits],
-            isLoadMore,
+            images: [...images, ...results.hits],
+            loadMore,
             status: 'resolved',
           });
         })
         .catch(error => {
-          this.setState({ error, status: 'rejected' });
+          console.log(error);
         });
-    }
-    if (prevState.page !== page) {
-      pixabayApi(page).then(results => {
-        const resultsLength = results.hits.length;
-        if (resultsLength === 0) {
-          this.setState({
-            error: new Error(`No search results for ${query}`),
-            status: 'rejected',
-          });
-          return;
-        }
-        this.setState({
-          images: [...images, ...results.hits],
-          isLoadMore,
-          status: 'resolved',
-        });
-      });
     }
   }
 
   handleSearchSubmit = query => {
     this.setState({
       query,
+      images: [],
       page: 1,
     });
   };
 
-  isLoadMore = resultsLength => {
+  checkImageLength = resultsLength => {
     return !(resultsLength < 12);
   };
 
@@ -70,13 +56,16 @@ export default class App extends Component {
   };
 
   render() {
-    const { images, status } = this.state;
+    const { images, status, loadMore } = this.state;
 
     return (
       <div className="App">
         <Searchbar onSubmit={this.handleSearchSubmit} />
         <ImageGallery items={images} toggleModal={this.toggleModal} />
-        {status === 'resolved' && <Button onClick={this.handleLoadMoreBtn} />}
+        {status === 'pending' && <Spinner />}
+        {status === 'resolved' && loadMore && (
+          <Button onClick={this.handleLoadMoreBtn} />
+        )}
       </div>
     );
   }

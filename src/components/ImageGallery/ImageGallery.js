@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import PropTypes, { string } from 'prop-types';
+import PropTypes from 'prop-types';
 import ImageGalleryItem from '../ImageGalleryItem/ImageGalleryItem';
 import Modal from '../Modal/Modal';
 
@@ -20,6 +20,9 @@ export default class ImageGallery extends Component {
   };
 
   render() {
+    const { items } = this.props;
+    const { imgIndex } = this.state;
+
     return (
       <>
         <ul className={s.gallery}>
@@ -36,8 +39,8 @@ export default class ImageGallery extends Component {
         {this.state.showModal && (
           <Modal onCloseModal={this.toggleModal}>
             <img
-              src={this.props.items[this.state.imgIndex].largeImageURL}
-              alt={this.props.items[this.state.imgIndex].tags}
+              src={items[imgIndex].largeImageURL}
+              alt={items[imgIndex].tags}
             />
           </Modal>
         )}
@@ -45,3 +48,7 @@ export default class ImageGallery extends Component {
     );
   }
 }
+
+ImageGallery.propTypes = {
+  items: PropTypes.arrayOf(PropTypes.object),
+};

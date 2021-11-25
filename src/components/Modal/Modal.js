@@ -36,3 +36,7 @@ export default class Modal extends Component {
     );
   }
 }
+
+Modal.propTypes = {
+  onCloseModal: PropTypes.func.isRequired,
+};
