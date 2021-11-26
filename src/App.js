@@ -27,8 +27,8 @@ export default class App extends Component {
           const showBtnLoadMore = this.checkImageLength(results);
 
           this.setState({
-            showBtnLoadMore,
             images: [...images, ...results.hits],
+            showBtnLoadMore,
             status: 'resolved',
           });
         })
@@ -47,7 +47,7 @@ export default class App extends Component {
   };
 
   checkImageLength = results => {
-    return !(results.hits < 12 || results.totalHits < 12);
+    return !(results.hits.length < 12 && results.totalHits <= 12);
   };
 
   handleLoadMoreBtn = () => {
