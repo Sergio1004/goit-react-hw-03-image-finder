@@ -47,7 +47,7 @@ export default class App extends Component {
   };
 
   checkImageLength = results => {
-    return !(results.hits.length < 12 && results.totalHits <= 12);
+    return !(results.hits.length < 12 || results.totalHits <= 12);
   };
 
   handleLoadMoreBtn = () => {
