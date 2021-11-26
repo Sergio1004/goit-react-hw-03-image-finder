@@ -24,11 +24,11 @@ export default class App extends Component {
 
       pixabayApi(query, page)
         .then(results => {
-          const showBtnLoadMore = this.checkImageLength(results.hits.length);
+          const showBtnLoadMore = this.checkImageLength(results);
 
           this.setState({
-            images: [...images, ...results.hits],
             showBtnLoadMore,
+            images: [...images, ...results.hits],
             status: 'resolved',
           });
         })
@@ -46,8 +46,8 @@ export default class App extends Component {
     });
   };
 
-  checkImageLength = resultsLength => {
-    return !(resultsLength < 12);
+  checkImageLength = results => {
+    return !(results.hits < 12 || results.totalHits < 12);
   };
 
   handleLoadMoreBtn = () => {
