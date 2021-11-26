@@ -12,7 +12,7 @@ export default class App extends Component {
     query: '',
     page: 1,
     status: 'idle',
-    loadMore: false,
+    showBtnLoadMore: false,
   };
 
   componentDidUpdate(prevProps, prevState) {
@@ -24,12 +24,11 @@ export default class App extends Component {
 
       pixabayApi(query, page)
         .then(results => {
-          const resultsLength = results.hits.length;
-          const loadMore = this.checkImageLength(resultsLength);
+          const showBtnLoadMore = this.checkImageLength(results.hits.length);
 
           this.setState({
             images: [...images, ...results.hits],
-            loadMore,
+            showBtnLoadMore,
             status: 'resolved',
           });
         })
@@ -52,18 +51,18 @@ export default class App extends Component {
   };
 
   handleLoadMoreBtn = () => {
-    this.setState(() => ({ page: this.state.page + 1 }));
+    this.setState(prevState => ({ page: prevState.page + 1 }));
   };
 
   render() {
-    const { images, status, loadMore } = this.state;
+    const { images, status, showBtnLoadMore } = this.state;
 
     return (
       <div className="App">
         <Searchbar onSubmit={this.handleSearchSubmit} />
         <ImageGallery items={images} toggleModal={this.toggleModal} />
         {status === 'pending' && <Spinner />}
-        {status === 'resolved' && loadMore && (
+        {status !== 'pending' && showBtnLoadMore && (
           <Button onClick={this.handleLoadMoreBtn} />
         )}
       </div>
